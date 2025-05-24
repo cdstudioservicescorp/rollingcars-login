@@ -4,26 +4,25 @@ from email.mime.text import MIMEText
 import os
 
 app = Flask(__name__)
-app.secret_key = 'rollingcars_secret_key'
-app.debug = True  # Mostrar errores en tiempo real
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'default_secret')
 
-EMAIL_ORIGEN = "rollingcarsfl.marketing@gmail.com"
-EMAIL_DESTINO = "rollingcarsfl.marketing@gmail.com"
-EMAIL_PASS = "blzxkqbkrvwzipo"
+EMAIL_ORIGEN = os.environ.get("EMAIL_ORIGEN")
+EMAIL_DESTINO = os.environ.get("EMAIL_DESTINO")
+EMAIL_PASS = os.environ.get("EMAIL_PASS")
 
 @app.route('/')
 def home():
     if 'logged' in session:
         return redirect("https://www.rollingcarsusa.com")
-    return render_template('login.html')
+    return render_template("login.html")
 
 @app.route('/submit', methods=['POST'])
 def submit():
-    email = request.form.get('email', 'Not provided')
+    email = request.form.get('email')
     phone = request.form.get('phone', 'Not provided')
 
     msg = MIMEText(f"Lead captured:\nEmail: {email}\nPhone: {phone}")
-    msg['Subject'] = 'New Leads'
+    msg['Subject'] = "New Lead"
     msg['From'] = EMAIL_ORIGEN
     msg['To'] = EMAIL_DESTINO
 
@@ -35,8 +34,7 @@ def submit():
         session['logged'] = True
         return redirect('/')
     except Exception as e:
-        print(f"Error sending email: {e}")
-        return render_template('login.html')
+        return f"Error sending email: {str(e)}"
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=10000)
+    app.run()
