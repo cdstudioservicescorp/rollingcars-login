@@ -23,9 +23,7 @@ def submit():
     phone = request.form.get('phone', 'Not provided')
 
     # Enviar correo
-    msg = MIMEText(f"Lead captured:
-Email: {email}
-Phone: {phone}")
+    msg = MIMEText(f"Lead captured:\\nEmail: {email}\\nPhone: {phone}")
     msg['Subject'] = 'new leads'
     msg['From'] = EMAIL_ORIGEN
     msg['To'] = EMAIL_DESTINO
